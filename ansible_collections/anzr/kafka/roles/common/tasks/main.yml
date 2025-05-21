@@ -1,0 +1,53 @@
+- name: "Roll out Kafka tarball"
+  ansible.builtin.unarchive:
+    dest: "/opt"
+    src: "files/kafka_{{ kafka_version }}.tgz"
+    creates: "/opt/kafka_{{ kafka_version }}"
+
+- name: Symlink Kafka dir
+  ansible.builtin.file:
+    dest: "/opt/kafka"
+    src: "/opt/kafka_{{ kafka_version }}"
+    state: link
+
+- name: Check if java is available
+  ansible.builtin.shell: "which java && java --version"
+  register: "java_version_check"
+  failed_when: false
+  changed_when: false
+
+- name: Copy JRE and dependencies packages
+  ansible.builtin.copy:
+    dest: "/var/cache/apt/archives/"
+    src: "{{ item }}"
+  with_items:
+    - "files/archives/alsa-topology-conf_1.2.5.1-2_all.deb"
+    - "files/archives/alsa-ucm-conf_1.2.8-1_all.deb"
+    - "files/archives/ca-certificates-java_20230710~deb12u1_all.deb"
+    - "files/archives/default-jre-headless_2%3a1.17-74_amd64.deb"
+    - "files/archives/fontconfig-config_2.14.1-4_amd64.deb"
+    - "files/archives/fonts-dejavu-core_2.37-6_all.deb"
+    - "files/archives/java-common_0.74_all.deb"
+    - "files/archives/libasound2-data_1.2.8-1_all.deb"
+    - "files/archives/libasound2_1.2.8-1+b1_amd64.deb"
+    - "files/archives/libavahi-client3_0.8-10+deb12u1_amd64.deb"
+    - "files/archives/libavahi-common-data_0.8-10+deb12u1_amd64.deb"
+    - "files/archives/libavahi-common3_0.8-10+deb12u1_amd64.deb"
+    - "files/archives/libcups2_2.4.2-3+deb12u8_amd64.deb"
+    - "files/archives/libfontconfig1_2.14.1-4_amd64.deb"
+    - "files/archives/libgraphite2-3_1.3.14-1_amd64.deb"
+    - "files/archives/libharfbuzz0b_6.0.0+dfsg-3_amd64.deb"
+    - "files/archives/libjpeg62-turbo_1%3a2.1.5-2_amd64.deb"
+    - "files/archives/liblcms2-2_2.14-2_amd64.deb"
+    - "files/archives/libnspr4_2%3a4.35-1_amd64.deb"
+    - "files/archives/libnss3_2%3a3.87.1-1+deb12u1_amd64.deb"
+    - "files/archives/libpcsclite1_1.9.9-2_amd64.deb"
+    - "files/archives/openjdk-17-jre-headless_17.0.15+6-1~deb12u1_amd64.deb"
+  when:
+    java_version_check.rc != 0
+
+- name: Install default-jre-headless
+  ansible.builtin.apt:
+    name: "default-jre-headless"
+  when:
+    java_version_check.rc != 0
