@@ -1,0 +1,7 @@
+- name: Install Apache Kafka
+  hosts: all
+  # become: false
+  vars:
+    kafka_version: "2.13-4.0.0"
+  roles:
+    - anzr.kafka.common
