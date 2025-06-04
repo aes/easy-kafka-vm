@@ -77,7 +77,7 @@ c7e63074d686729936950afc3bc4780fe69a7602040894a340159e14c9627fa7e3f342466cb41345
 ensure_kafka_archive() {
     BASE=https://dlcdn.apache.org/kafka/4.0.0/
     cd "$START"
-    cd ansible_collections/anzr/kafka/roles/common/files/ || exit 1
+    cd ansible_collections/anzr/kafka/roles/kafka/files/ || exit 1
 
     sha512sum -c all.sha512sum && printf "all ok\n" && exit 0
 
