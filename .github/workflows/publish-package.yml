@@ -8,21 +8,19 @@ on:
 jobs:
   build-and-publish:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
+    permissions: write-all
     steps:
       - uses: actions/checkout@v4
 
       - name: Run build
         run: bash ./build-dist.sh
 
-      - name: Create GitHub Release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ env.VERSION }}
-          release_name: ${{ env.VERSION }}
-          draft: false
-          prerelease: false
+          token: ${{ secrets.GITHUB_TOKEN }}
+          make_latest: true
+          name: "${{ env.VERSION }}"
+          tag_name: "${{ env.VERSION }}"
+          files: |
+            /tmp/easy-kafka-vm_*.tar.gz
