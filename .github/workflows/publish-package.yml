@@ -17,12 +17,10 @@ jobs:
       - name: Run build
         run: bash ./build-dist.sh
 
-      - name: Create GitHub Release
-        uses: actions/create-release@v1
+      - name: Create Release
+        uses: elgohr/Github-Release-Action@v5
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
         with:
-          tag_name: ${{ env.VERSION }}
-          release_name: ${{ env.VERSION }}
-          draft: false
-          prerelease: false
+          title: "${{ env.VERSION }}"
+          tag: "${{ env.VERSION }}"
