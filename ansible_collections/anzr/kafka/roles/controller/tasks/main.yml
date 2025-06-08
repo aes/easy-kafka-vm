@@ -23,3 +23,10 @@
       listener.security.protocol.map=CONTROLLER:PLAINTEXT
 
       log.dirs=/var/lib/kafka-controller-logs
+
+- name: "Include storage"
+  include_role:
+    name: "storage"
+  vars:
+    kafka_config: /etc/kafka/controller-server.properties
+    kafka_log_dir: /var/lib/kafka-controller-logs
