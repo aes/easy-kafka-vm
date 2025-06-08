@@ -2,3 +2,8 @@
   hosts: all
   roles:
     - anzr.kafka.kafka
+
+- name: Install Kafka controller
+  hosts: kafka_controllers
+  roles:
+    - anzr.kafka.controller

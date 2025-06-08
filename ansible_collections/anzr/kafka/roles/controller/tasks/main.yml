@@ -1,0 +1,25 @@
+- name: "Include Kafka"
+  include_role:
+    name: "kafka"
+
+- name: Ensure Kafka configuration directory present
+  file:
+    dest: /etc/kafka
+    state: directory
+
+- name: Install controller properties
+  ansible.builtin.copy:
+    dest: /etc/kafka/controller-server.properties
+    mode: "0644"
+    owner: root
+    group: root
+    content: |
+      node.id={{ controller_node_id }}
+      process.roles=controller
+      controller.quorum.voters={{ voters }}
+      controller.listener.names=CONTROLLER
+
+      listeners=CONTROLLER://0.0.0.0:9093
+      listener.security.protocol.map=CONTROLLER:PLAINTEXT
+
+      log.dirs=/var/lib/kafka-controller-logs
