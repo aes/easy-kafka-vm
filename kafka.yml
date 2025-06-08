@@ -7,3 +7,8 @@
   hosts: kafka_controllers
   roles:
     - anzr.kafka.controller
+
+- name: Install Kafka broker
+  hosts: kafka_brokers
+  roles:
+    - anzr.kafka.broker
