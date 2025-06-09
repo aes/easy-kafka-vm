@@ -43,3 +43,31 @@
   vars:
     kafka_config: /etc/kafka/broker-server.properties
     kafka_log_dir: /var/lib/kafka-broker-logs
+
+- name: "Install broker service file"
+  ansible.builtin.copy:
+    dest: /etc/systemd/system/kafka-broker.service
+    mode: "0644"
+    owner: root
+    group: root
+    content: |
+      # /etc/systemd/system/kafka-broker.service
+      [Unit]
+      Description=Kafka Broker
+      After=network.target
+
+      [Service]
+      Type=simple
+      # User=myuser
+      ExecStart=/opt/kafka/bin/kafka-server-start.sh \
+        /etc/kafka/broker-server.properties
+      Restart=on-failure
+
+      [Install]
+      WantedBy=multi-user.target
+
+- name: "Start broker service"
+  ansible.builtin.systemd_service:
+    name: "kafka-broker.service"
+    enabled: true
+    state: started
