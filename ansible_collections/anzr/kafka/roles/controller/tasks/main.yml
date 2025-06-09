@@ -30,3 +30,31 @@
   vars:
     kafka_config: /etc/kafka/controller-server.properties
     kafka_log_dir: /var/lib/kafka-controller-logs
+
+- name: "Install controller service file"
+  ansible.builtin.copy:
+    dest: /etc/systemd/system/kafka-controller.service
+    mode: "0644"
+    owner: root
+    group: root
+    content: |
+      # /etc/systemd/system/kafka-controller.service
+      [Unit]
+      Description=Kafka Controller
+      After=network.target
+
+      [Service]
+      Type=simple
+      # User=myuser
+      ExecStart=/opt/kafka/bin/kafka-server-start.sh \
+        /etc/kafka/controller-server.properties
+      Restart=on-failure
+
+      [Install]
+      WantedBy=multi-user.target
+
+- name: "Start controller service"
+  ansible.builtin.systemd_service:
+    name: "kafka-controller.service"
+    enabled: true
+    state: started
