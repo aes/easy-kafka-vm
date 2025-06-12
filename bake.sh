@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-: "${NAME:=kitten}"
+: "${NAME:=knas}"
 : "${LIBVIRT_IMAGE_DIR:=/var/lib/libvirt/images}"
 # : "${IMAGE:=${LIBVIRT_IMAGE_DIR}/debian-10-genericcloud-amd64.qcow2}"
 : "${IMAGE:=${LIBVIRT_IMAGE_DIR}/debian-12-genericcloud-amd64.qcow2}"
@@ -16,12 +16,12 @@ printf "\e[31m%s: %s\e[0m\n" LIBVIRT_IMAGE_DIR "$LIBVIRT_IMAGE_DIR"
 printf "\e[31m%s: %s\e[0m\n" IMAGE "$IMAGE"
 
 
-for ((i=0 ; i < N ; i++)); do
+for ((i=1 ; i <= N ; i++)); do
 
     INSTANCE="${NAME}${i}"
     DEST="${LIBVIRT_IMAGE_DIR}/${INSTANCE}.qcow2"
     CIDATA="${LIBVIRT_IMAGE_DIR}/${INSTANCE}-ci.iso"
-    MAC="$(printf "52:54:00:00:7a:%02x" "$((32 + i))")"
+    MAC="$(printf "52:54:00:00:7a:%02x" "$((40 + i))")"
 
     printf "\e[31m%s: %s\e[0m\n" INSTANCE "$INSTANCE"
     printf "\e[31m%s: %s\e[0m\n" MAC "$MAC"
@@ -56,7 +56,7 @@ EOF
 
     virt-install                                                    \
         --name="${INSTANCE}"                                        \
-        --ram=2048                                                  \
+        --ram=3072                                                  \
         --vcpus=1                                                   \
         --sysinfo entry0.name=host,entry0="${INSTANCE}"             \
         --os-variant=linux2024                                      \

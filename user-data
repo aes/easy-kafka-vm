@@ -5,7 +5,7 @@ create_hostname_file: true
 users:
   - name: franz
     lock_passwd: false
-    plain_text_passwd: kafka
+    plain_text_passwd: secret
     shell: /bin/bash
     ssh_authorized_keys:
       - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPlXfE3pqxEaV5zo15oQBN5aD9D28i8w1AcKta2RlEfj aes@rune

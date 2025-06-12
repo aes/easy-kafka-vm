@@ -4,33 +4,44 @@
     bash ./gimme.sh
 
     # to set up VM:s
-    bash ./setup.sh
+    sudo bash ./setup.sh
+
+    rsync -a ./ franz@192.168.122.41:fnord
 
     # to run Ansible
-    ansible-playbook -v -i hosts.yml kafka.yml
+    ansible-playbook \
+      -i hosts.yml \
+      --become-password-file=.become-pass \
+      confluent.platform.validate_hosts
 
 # On the node(s)
 
-    # start controller
-    sudo /opt/kafka/bin/kafka-server-start.sh /etc/kafka/controller-server.properties > controller.out 2> controller.err &
+## Preliminaries
 
-    # start broker
-    sudo /opt/kafka/bin/kafka-server-start.sh /etc/kafka/broker-server.properties > broker.out 2> broker.err &
+    echo 'PATH=$PATH:/opt/confluent/confluent-7.9.1/bin/' >> .profile
+    echo 'unset $(env | grep ^LC | cut -d= -f1)' >> .profile
+    dpkg --get-selections > selections-before-install.txt
+    sudo apt install ansible rsync
 
-    # follow logs
-    tail -f *.{out,err}
+## Make it possible to ssh to self
 
-    # shut down kafka
-    sudo pkill -f kafka-server-start
+    ssh-keygen
+    cat .ssh/id_rsa.pub >> .ssh/authorized_keys
+
+## Fix path to packages
+
+    sed "s,pwd: .*,pwd: $PWD," -i hosts.yml
 
     # ...
-    PATH="$PATH:/opt/kafka/bin/"
-    BOOT="--bootstrap-server=$HOSTNAME:9092"
 
-    kafka-topics.sh --create "$BOOT" --topic test --partitions 3 --replication-factor 3
-    kafka-topics.sh --describe "$BOOT" --topic test
+    dpkg --get-selections > selections-after-install-headless.txt
 
+# Update packages.tsv
 
-    kafka-console-producer.sh "$BOOT" --topic test
+    comm -3 \
+        selections-after-install-headless.txt \
+        selections-before-install.txt \
+      | sed 's:\t\t*install::' \
+      > needed_packages.txt
 
-    kafka-console-consumer.sh "$BOOT" --topic test --from-beginning
+    apt download --print-uris $(cat needed_packages.txt) > packages.tsv

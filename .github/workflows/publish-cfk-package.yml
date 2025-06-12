@@ -1,0 +1,26 @@
+name: Publish Release
+
+"on":
+  push:
+    branches:
+      - confluent
+
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+    permissions: write-all
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run build
+        run: bash ./build-dist.sh
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          make_latest: true
+          name: "${{ env.VERSION }}"
+          tag_name: "${{ env.VERSION }}"
+          files: |
+            /tmp/easy-kafka-vm_*.tar.gz

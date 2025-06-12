@@ -1,1 +1,8 @@
-for i in 0 1 2 ; do virsh destroy kitten$i || true ; virsh undefine kitten$i || true ; done
+#!/bin/bash
+
+: "${N:=1}"
+
+for ((i=1 ; i <= N ; i++)); do
+    virsh destroy  knas$i || true
+    virsh undefine knas$i || true
+done
